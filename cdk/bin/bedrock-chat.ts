@@ -45,10 +45,12 @@ const ENABLE_BEDROCK_CROSS_REGION_INFERENCE: boolean = app.node.tryGetContext(
 );
 const ENABLE_LAMBDA_SNAPSTART: boolean = app.node.tryGetContext("enableLambdaSnapStart");
 
+const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, ''); // Format: YYYYMMDD
+
 // WAF for frontend
 // 2023/9: Currently, the WAF for CloudFront needs to be created in the North America region (us-east-1), so the stacks are separated
 // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webacl.html
-const waf = new FrontendWafStack(app, `FrontendWafStack`, {
+const waf = new FrontendWafStack(app, `FrontendWafStack-${timestamp}`, {
   env: {
     // account: process.env.CDK_DEFAULT_ACCOUNT,
     region: "us-east-1",
@@ -63,7 +65,7 @@ const waf = new FrontendWafStack(app, `FrontendWafStack`, {
 // Ref: https://docs.aws.amazon.com/bedrock/latest/userguide/s3-data-source-connector.html
 const bedrockRegionResources = new BedrockRegionResourcesStack(
   app,
-  `BedrockRegionResourcesStack`,
+  `BedrockRegionResourcesStack-${timestamp}`,
   {
     env: {
       // account: process.env.CDK_DEFAULT_ACCOUNT,
@@ -73,7 +75,7 @@ const bedrockRegionResources = new BedrockRegionResourcesStack(
   }
 );
 
-const chat = new BedrockChatStack(app, `BedrockChatStack`, {
+const chat = new BedrockChatStack(app, `BedrockChatStack-${timestamp}`, {
   env: {
     // account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,

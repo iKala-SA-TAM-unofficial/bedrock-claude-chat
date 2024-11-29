@@ -63,10 +63,12 @@ const largeMessageBucketName = cdk.Fn.importValue(
   "BedrockClaudeChatLargeMessageBucketName"
 );
 
+const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
+
 // NOTE: DO NOT change the stack id naming rule.
 const publishedApi = new ApiPublishmentStack(
   app,
-  `ApiPublishmentStack${PUBLISHED_API_ID}`,
+  `ApiPublishmentStack${PUBLISHED_API_ID}-${timestamp}`,
   {
     env: {
       region: process.env.CDK_DEFAULT_REGION,

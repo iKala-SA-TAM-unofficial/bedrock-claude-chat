@@ -161,9 +161,11 @@ if (analyzer) {
 
 console.log("overlapPercentage: ", overlapPercentage);
 
+const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
+
 const bedrockCustomBotStack = new BedrockCustomBotStack(
   app,
-  `BrChatKbStack${botId}`,
+  `BrChatKbStack${botId}-${timestamp}`,
   {
     env: {
       // account: process.env.CDK_DEFAULT_ACCOUNT,
