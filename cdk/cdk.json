@@ -70,6 +70,8 @@
     ],
     "enableRagReplicas": true,
     "enableBedrockCrossRegionInference": true,
-    "enableLambdaSnapStart": true
+    "enableLambdaSnapStart": true,
+    "@aws-cdk/core:bootstrapQualifier": "1206rich",
+    "qualifier": "1206rich"
   }
 }
