@@ -78,7 +78,7 @@ const bedrockRegionResources = new BedrockRegionResourcesStack(
 const chat = new BedrockChatStack(app, `BedrockChatStack-${timestamp}`, {
   env: {
     // account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION,
+    region: "ap-northeast-1",
   },
   crossRegionReferences: true,
   bedrockRegion: BEDROCK_REGION,
