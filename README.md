@@ -100,6 +100,9 @@ You can specify the following parameters during deployment to enhance security a
 - **--bedrock-region**: Define the region where bedrock is available. (default: us-east-1)
 - **--version**: The version of Bedrock Claude Chat to deploy. (default: latest version in development)
 
+> [!Warning] Currently, the WAF for CloudFront needs to be created in the North America region (us-east-1), so the stacks are separated. https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webacl.html
+> Since the bin.sh script will create CloudFront automatically with `cdk bootstrap` in region us-east-1 and it must be in region us-east-1 ([doc](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webacl.html)), if you wish to create a bedrock in other regions, assign the parameter "bedrock-region" as parameter when running bin.sh.
+
 #### Example command with parameters:
 
 ```sh
