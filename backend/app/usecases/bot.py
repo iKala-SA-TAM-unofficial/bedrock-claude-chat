@@ -28,6 +28,7 @@ from app.repositories.custom_bot import (
     update_bot_pin_status,
 )
 from app.repositories.models.custom_bot import (
+    ActiveModelsModel,
     AgentModel,
     AgentToolModel,
     BotAliasModel,
@@ -40,6 +41,8 @@ from app.repositories.models.custom_bot import (
 from app.repositories.models.custom_bot_guardrails import BedrockGuardrailsModel
 from app.repositories.models.custom_bot_kb import BedrockKnowledgeBaseModel
 from app.routes.schemas.bot import (
+    ActiveModelsInput,
+    ActiveModelsOutput,
     Agent,
     AgentTool,
     BotInput,
@@ -106,12 +109,18 @@ def create_new_bot(user_id: str, bot_input: BotInput) -> BotOutput:
         or len(bot_input.knowledge.sitemap_urls) > 0
         or len(bot_input.knowledge.filenames) > 0
         or len(bot_input.knowledge.s3_urls) > 0
+        # This is a condition for running Sfn to register existing KB information in DynamoDB when an existing KB is specified.
+        or (
+            bot_input.bedrock_knowledge_base is not None
+            and bot_input.bedrock_knowledge_base.exist_knowledge_base_id is not None
+        )
     )
 
     has_guardrails = (
         bot_input.bedrock_guardrails
         and bot_input.bedrock_guardrails.is_guardrail_enabled == True
     )
+
     sync_status: type_sync_status = (
         "QUEUED" if has_knowledge or has_guardrails else "SUCCEEDED"
     )
@@ -210,6 +219,9 @@ def create_new_bot(user_id: str, bot_input: BotInput) -> BotOutput:
                 if bot_input.bedrock_guardrails
                 else None
             ),
+            active_models=ActiveModelsModel.model_validate(
+                dict(bot_input.active_models)
+            ),
         ),
     )
     return BotOutput(
@@ -262,6 +274,7 @@ def create_new_bot(user_id: str, bot_input: BotInput) -> BotOutput:
             if bot_input.bedrock_guardrails
             else None
         ),
+        active_models=ActiveModelsOutput.model_validate(dict(bot_input.active_models)),
     )
 
 
@@ -374,6 +387,9 @@ def modify_owned_bot(
             if modify_input.bedrock_guardrails
             else None
         ),
+        active_models=ActiveModelsOutput.model_validate(
+            dict(modify_input.active_models)
+        ),
     )
 
     return BotModifyOutput(
@@ -416,6 +432,9 @@ def modify_owned_bot(
             BedrockGuardrailsOutput(**modify_input.bedrock_guardrails.model_dump())
             if modify_input.bedrock_guardrails
             else None
+        ),
+        active_models=ActiveModelsOutput.model_validate(
+            dict(modify_input.active_models)
         ),
     )
 
@@ -518,6 +537,7 @@ def fetch_all_bots_by_user_id(
                     ConversationQuickStarter(**starter)
                     for starter in item.get("ConversationQuickStarters", [])
                 ]
+                or bot.active_models != item["ActiveModels"]
             ):
                 # Update alias to the latest original bot
                 store_alias(
@@ -535,6 +555,9 @@ def fetch_all_bots_by_user_id(
                         has_knowledge=bot.has_knowledge(),
                         has_agent=bot.is_agent_enabled(),
                         conversation_quick_starters=bot.conversation_quick_starters,
+                        active_models=ActiveModelsModel.model_validate(
+                            dict(bot.active_models)
+                        ),
                     ),
                 )
 
@@ -631,6 +654,7 @@ def fetch_bot_summary(user_id: str, bot_id: str) -> BotSummaryOutput:
                 )
                 for starter in bot.conversation_quick_starters
             ],
+            active_models=ActiveModelsOutput.model_validate(dict(bot.active_models)),
         )
 
     except RecordNotFoundError:
@@ -638,6 +662,10 @@ def fetch_bot_summary(user_id: str, bot_id: str) -> BotSummaryOutput:
 
     try:
         alias = find_alias_by_id(user_id, bot_id)
+
+        # update bot model activate if alias is found.
+        bot = find_public_bot_by_id(bot_id)
+
         return BotSummaryOutput(
             id=alias.id,
             title=alias.title,
@@ -661,6 +689,7 @@ def fetch_bot_summary(user_id: str, bot_id: str) -> BotSummaryOutput:
                     for starter in alias.conversation_quick_starters
                 ]
             ),
+            active_models=ActiveModelsOutput.model_validate(dict(alias.active_models)),
         )
     except RecordNotFoundError:
         pass
@@ -690,6 +719,9 @@ def fetch_bot_summary(user_id: str, bot_id: str) -> BotSummaryOutput:
                     )
                     for starter in bot.conversation_quick_starters
                 ],
+                active_models=ActiveModelsOutput.model_validate(
+                    dict(bot.active_models)
+                ),
             ),
         )
         return BotSummaryOutput(
@@ -711,6 +743,7 @@ def fetch_bot_summary(user_id: str, bot_id: str) -> BotSummaryOutput:
                 )
                 for starter in bot.conversation_quick_starters
             ],
+            active_models=ActiveModelsOutput.model_validate(dict(bot.active_models)),
         )
     except RecordNotFoundError:
         raise RecordNotFoundError(

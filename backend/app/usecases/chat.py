@@ -3,15 +3,11 @@ from typing import Callable
 
 from app.agents.tools.agent_tool import (
     ToolRunResult,
-    run_result_to_tool_result_content_model,
 )
 from app.agents.tools.knowledge import create_knowledge_tool
 from app.agents.utils import get_tool_by_name
-from app.bedrock import (
-    call_converse_api,
-    compose_args_for_converse_api,
-)
-from app.prompt import build_rag_prompt, PROMPT_TO_CITE_TOOL_RESULTS
+from app.bedrock import call_converse_api, compose_args_for_converse_api
+from app.prompt import build_rag_prompt, get_prompt_to_cite_tool_results
 from app.repositories.conversation import (
     RecordNotFoundError,
     find_conversation_by_id,
@@ -20,13 +16,13 @@ from app.repositories.conversation import (
 )
 from app.repositories.custom_bot import find_alias_by_id, store_alias
 from app.repositories.models.conversation import (
-    SimpleMessageModel,
     ConversationModel,
     MessageModel,
     RelatedDocumentModel,
+    SimpleMessageModel,
     TextContentModel,
-    ToolUseContentModel,
     ToolResultContentModel,
+    ToolUseContentModel,
 )
 from app.repositories.models.custom_bot import (
     BotAliasModel,
@@ -47,8 +43,8 @@ from app.usecases.bot import fetch_bot, modify_bot_last_used_time
 from app.utils import get_current_time
 from app.vector_search import (
     SearchResult,
-    search_result_to_related_document,
     search_related_docs,
+    search_result_to_related_document,
     to_guardrails_grounding_source,
 )
 from ulid import ULID
@@ -159,6 +155,7 @@ def prepare_conversation(
                                     for starter in bot.conversation_quick_starters
                                 ]
                             ),
+                            active_models=bot.active_models,
                         ),
                     )
 
@@ -262,11 +259,15 @@ def chat(
         if bot.is_agent_enabled():
             if bot.has_knowledge():
                 # Add knowledge tool
-                knowledge_tool = create_knowledge_tool(bot, chat_input.message.model)
+                knowledge_tool = create_knowledge_tool(bot=bot)
                 tools[knowledge_tool.name] = knowledge_tool
 
             if display_citation:
-                instructions.append(PROMPT_TO_CITE_TOOL_RESULTS)
+                instructions.append(
+                    get_prompt_to_cite_tool_results(
+                        model=chat_input.message.model,
+                    )
+                )
 
         elif bot.has_knowledge():
             # Fetch most related documents from vector store
@@ -308,6 +309,7 @@ def chat(
                 instructions.append(
                     build_rag_prompt(
                         search_results=search_results,
+                        model=chat_input.message.model,
                         display_citation=display_citation,
                     )
                 )
@@ -434,6 +436,8 @@ def chat(
             run_result = tool.run(
                 tool_use_id=content.body.tool_use_id,
                 input=content.body.input,
+                model=chat_input.message.model,
+                bot=bot,
             )
             run_results.append(run_result)
 
@@ -446,8 +450,9 @@ def chat(
         tool_result_message = SimpleMessageModel(
             role="user",
             content=[
-                run_result_to_tool_result_content_model(
+                ToolResultContentModel.from_tool_run_result(
                     run_result=result,
+                    model=chat_input.message.model,
                     display_citation=display_citation,
                 )
                 for result in run_results
