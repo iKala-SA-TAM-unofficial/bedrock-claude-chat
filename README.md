@@ -14,7 +14,8 @@ This repository is a sample chatbot using the Anthropic company's LLM [Claude](h
 
 ![](./docs/imgs/demo.gif)
 
-### Bot Personalization
+<details>
+<summary>Bot Personalization</summary>
 
 Add your own instruction and give external knowledge as URL or files (a.k.a [RAG](https://aws.amazon.com/what-is/retrieval-augmented-generation/). The bot can be shared among application users. The customized bot also can be published as stand-alone API (See the [detail](./docs/PUBLISH_API.md)).
 
@@ -24,6 +25,7 @@ Add your own instruction and give external knowledge as URL or files (a.k.a [RAG
 
 > [!Important]
 > For governance reasons, only allowed users are able to create customized bots. To allow the creation of customized bots, the user must be a member of group called `CreatingBotAllowed`, which can be set up via the management console > Amazon Cognito User pools or aws cli. Note that the user pool id can be referred by accessing CloudFormation > BedrockChatStack > Outputs > `AuthUserPoolIdxxxx`.
+</details>
 
 ### Administrator dashboard
 
@@ -63,6 +65,14 @@ By using the [Agent functionality](./docs/AGENT.md), your chatbot can automatica
 - Bahasa Indonesia 💬
 - Bahasa Melayu 💬
 - Tiếng Việt 💬
+
+## Deployment
+There are two ways to deploy a chatbot:
+
+- Super-easy deployment: This method is designed for using in AWS Cloud Shell or EC2 instance. Or you can use it in your local terminal.
+- Using CDK: This method is designed for using in Cloud9. Notice that it requires large amount of space to register container layers. Expand your disk of VM for Cloud9 before you deploy.
+
+Both method require usig CDK config file in cdk/cdk.js. To use custom bootstrap, please refer to [deploy.md](deploy.md).
 
 ## 🚀 Super-easy Deployment
 
