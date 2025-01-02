@@ -71,7 +71,7 @@
     "enableRagReplicas": true,
     "enableBedrockCrossRegionInference": true,
     "enableLambdaSnapStart": true,
-    "@aws-cdk/core:bootstrapQualifier": "12sporton2",
-    "qualifier": "12sporton2"
+    "@aws-cdk/core:bootstrapQualifier": "0102rich",
+    "qualifier": "0102rich"
   }
 }
