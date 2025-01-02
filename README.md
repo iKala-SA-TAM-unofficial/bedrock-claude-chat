@@ -14,7 +14,8 @@ This repository is a sample chatbot using the Anthropic company's LLM [Claude](h
 
 ![](./docs/imgs/demo.gif)
 
-### Bot Personalization
+<details>
+<summary>Bot Personalization</summary>
 
 Add your own instruction and give external knowledge as URL or files (a.k.a [RAG](https://aws.amazon.com/what-is/retrieval-augmented-generation/). The bot can be shared among application users. The customized bot also can be published as stand-alone API (See the [detail](./docs/PUBLISH_API.md)).
 
@@ -24,6 +25,7 @@ Add your own instruction and give external knowledge as URL or files (a.k.a [RAG
 
 > [!Important]
 > For governance reasons, only allowed users are able to create customized bots. To allow the creation of customized bots, the user must be a member of group called `CreatingBotAllowed`, which can be set up via the management console > Amazon Cognito User pools or aws cli. Note that the user pool id can be referred by accessing CloudFormation > BedrockChatStack > Outputs > `AuthUserPoolIdxxxx`.
+</details>
 
 ### Administrator dashboard
 
@@ -64,6 +66,14 @@ By using the [Agent functionality](./docs/AGENT.md), your chatbot can automatica
 - Bahasa Melayu 💬
 - Tiếng Việt 💬
 
+## Deployment
+There are two ways to deploy a chatbot:
+
+- Super-easy deployment: This method is designed for using in AWS Cloud Shell or EC2 instance. Or you can use it in your local terminal.
+- Using CDK: This method is designed for using in Cloud9. Notice that it requires large amount of space to register container layers. Expand your disk of VM for Cloud9 before you deploy.
+
+Both method require usig CDK config file in cdk/cdk.js. To use custom bootstrap, please refer to [deploy.md](deploy.md).
+
 ## 🚀 Super-easy Deployment
 
 - In the us-east-1 region, open [Bedrock Model access](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess) > `Manage model access` > Check all of `Anthropic / Claude 3`, all of `Amazon / Nova`, `Amazon / Titan Text Embeddings V2` and `Cohere / Embed Multilingual` then `Save changes`.
@@ -99,6 +109,9 @@ You can specify the following parameters during deployment to enhance security a
 - **--allowed-signup-email-domains**: Comma-separated list of allowed email domains for sign-up. (default: no domain restriction)
 - **--bedrock-region**: Define the region where bedrock is available. (default: us-east-1)
 - **--version**: The version of Bedrock Claude Chat to deploy. (default: latest version in development)
+
+> [!Warning] Currently, the WAF for CloudFront needs to be created in the North America region (us-east-1), so the stacks are separated. https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webacl.html
+> Since the bin.sh script will create CloudFront automatically with `cdk bootstrap` in region us-east-1 and it must be in region us-east-1 ([doc](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webacl.html)), if you wish to create a bedrock in other regions, assign the parameter "bedrock-region" as parameter when running bin.sh.
 
 #### Example command with parameters:
 
