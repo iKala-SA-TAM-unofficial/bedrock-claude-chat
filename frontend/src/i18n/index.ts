@@ -11,6 +11,10 @@ import fr from './fr';
 import de from './de';
 import it from './it';
 import nb from './nb';
+import th from './th';
+import id from './id';
+import ms from './ms';
+import vi from './vi';
 
 export const LANGUAGES: {
   value: string;
@@ -54,8 +58,24 @@ export const LANGUAGES: {
   },
   {
     value: 'nb',
-    label: 'Norsk (Bokmål)'
-  }
+    label: 'Norsk (Bokmål)',
+  },
+  {
+    value: 'th',
+    label: 'ไทย',
+  },
+  {
+    value: 'id',
+    label: 'Bahasa Indonesia',
+  },
+  {
+    value: 'ms',
+    label: 'Bahasa Melayu',
+  },
+  {
+    value: 'vi',
+    label: 'Tiếng Việt',
+  },
 ];
 
 const resources = {
@@ -69,6 +89,10 @@ const resources = {
   zhhans,
   zhhant,
   nb,
+  th,
+  id,
+  ms,
+  vi,
 };
 
 // Settings i18n

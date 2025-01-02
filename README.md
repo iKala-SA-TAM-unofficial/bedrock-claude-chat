@@ -1,4 +1,4 @@
-# Bedrock Claude Chat
+# Bedrock Claude Chat (Nova)
 
 ![](https://github.com/aws-samples/bedrock-claude-chat/actions/workflows/cdk.yml/badge.svg)
 
@@ -11,8 +11,6 @@ This repository is a sample chatbot using the Anthropic company's LLM [Claude](h
 [![Overview](https://img.youtube.com/vi/PDTGrHlaLCQ/hq1.jpg)](https://www.youtube.com/watch?v=PDTGrHlaLCQ)
 
 ### Basic Conversation
-
-Not only text but also images are available with [Anthropic's Claude 3](https://www.anthropic.com/news/claude-3-family). Currently we support `Haiku`, `Sonnet` and `Opus`.
 
 ![](./docs/imgs/demo.gif)
 
@@ -61,10 +59,14 @@ By using the [Agent functionality](./docs/AGENT.md), your chatbot can automatica
 - Español 💬
 - Italian 💬
 - Norsk 💬
+- ไทย 💬
+- Bahasa Indonesia 💬
+- Bahasa Melayu 💬
+- Tiếng Việt 💬
 
 ## 🚀 Super-easy Deployment
 
-- In the us-east-1 region, open [Bedrock Model access](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess) > `Manage model access` > Check `Anthropic / Claude 3 Haiku`, `Anthropic / Claude 3 Sonnet`, `Anthropic / Claude 3.5 Sonnet`, `Anthropic / Claude 3.5 Sonnet v2`, `Anthropic / Claude 3.5 Haiku`, `Amazon / Titan Text Embeddings V2` and `Cohere / Embed Multilingual` then `Save changes`.
+- In the us-east-1 region, open [Bedrock Model access](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess) > `Manage model access` > Check all of `Anthropic / Claude 3`, all of `Amazon / Nova`, `Amazon / Titan Text Embeddings V2` and `Cohere / Embed Multilingual` then `Save changes`.
 
 <details>
 <summary>Screenshot</summary>
